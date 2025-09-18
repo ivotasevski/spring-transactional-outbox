@@ -23,7 +23,7 @@ public class OutboxService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Outbox> findAndLockNextBatchForProcessing() {
         List<Outbox> batch = outboxRepository.findBatchForProcessing(5);
-        batch.forEach(outbox -> outbox.setStatus(OutboxStatus.IN_PROGRESS));
+        batch.forEach(outbox -> outbox.setStatus(OutboxStatus.RUNNING));
         outboxRepository.saveAll(batch);
         return batch;
     }

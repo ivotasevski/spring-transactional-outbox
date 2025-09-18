@@ -5,13 +5,17 @@ import com.ivotasevski.transoutbox.lib.OutboxService;
 import com.ivotasevski.transoutbox.lib.model.Outbox;
 import com.ivotasevski.transoutbox.lib.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.concurrent.CompletableFuture;
 
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class TransactionalOutbox {
@@ -20,7 +24,8 @@ public class TransactionalOutbox {
     private final OutboxProcessor outboxProcessor;
     private final OutboxRepository outboxRepository;
 
-    @Transactional
+    @Async
+    @Transactional(propagation = Propagation.REQUIRED)
     public CompletableFuture<Boolean> addAndProcessImmediately(OutboxType type, OutboxPayload payload) {
 
         Outbox outbox = outboxService.saveOutbox(type, payload);
@@ -42,6 +47,7 @@ public class TransactionalOutbox {
                     }
                 }
         );
+
         return resultHolder;
     }
 
@@ -51,9 +57,10 @@ public class TransactionalOutbox {
     }
 
     public void shutdown() {
-        // Implementation goes here
+        // gracefully shutdown implementation goes here
     }
 
     // cleanup
     // processPending
+    // unblock items that are stuck in PROCESSING
 }

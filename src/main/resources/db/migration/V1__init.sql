@@ -4,9 +4,11 @@ CREATE TABLE outbox
     payload        VARCHAR(255),
     type           VARCHAR(255),
     status         VARCHAR(255),
+    retries        INTEGER,
     created_at     TIMESTAMP WITHOUT TIME ZONE,
     updated_at     TIMESTAMP WITHOUT TIME ZONE,
     delete_after   TIMESTAMP WITHOUT TIME ZONE,
+    next_run_not_before   TIMESTAMP WITHOUT TIME ZONE,
     custom_version BIGINT,
     CONSTRAINT pk_outbox PRIMARY KEY (id)
 );
