@@ -28,14 +28,14 @@ public class OutboxService {
         return batch;
     }
 
-    public Outbox saveOutbox(OutboxType type, OutboxPayload payload) {
+    public Outbox saveOutbox(OutboxType type, OutboxPayload payload, OutboxStatus status) {
 
         OutboxHandler handler = handlerRegistry.getHandler(type);
 
         Outbox outbox = new Outbox();
         outbox.setType(type.getType());
         outbox.setPayload(handler.serialize(payload));
-        outbox.setStatus(OutboxStatus.PENDING);
+        outbox.setStatus(status);
         return outboxRepository.save(outbox);
     }
 

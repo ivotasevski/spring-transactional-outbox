@@ -3,6 +3,7 @@ package com.ivotasevski.transoutbox.lib.api;
 import com.ivotasevski.transoutbox.lib.OutboxProcessor;
 import com.ivotasevski.transoutbox.lib.OutboxService;
 import com.ivotasevski.transoutbox.lib.model.Outbox;
+import com.ivotasevski.transoutbox.lib.model.OutboxStatus;
 import com.ivotasevski.transoutbox.lib.repository.OutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class TransactionalOutbox {
     @Transactional(propagation = Propagation.REQUIRED)
     public CompletableFuture<Boolean> addAndProcessImmediately(OutboxType type, OutboxPayload payload) {
 
-        Outbox outbox = outboxService.saveOutbox(type, payload);
+        Outbox outbox = outboxService.saveOutbox(type, payload, OutboxStatus.RUNNING);
 
         CompletableFuture<Boolean> resultHolder = new CompletableFuture<>();
 
@@ -53,7 +54,7 @@ public class TransactionalOutbox {
 
     @Transactional
     public void add(OutboxType type, OutboxPayload payload) {
-        outboxService.saveOutbox(type, payload);
+        outboxService.saveOutbox(type, payload, OutboxStatus.PENDING);
     }
 
     public void shutdown() {
